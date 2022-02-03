@@ -33,16 +33,21 @@ app.use(session({
     resave: false, 
     saveUninitialized: false,
     store: store 
-}));
+    })
+);
 
 app.use((req, res, next) => {
-    User.findById('61f3288f0d49e121d2d09ae7')
+    if (!req.session.user) {
+        return next();
+    }
+    User.findById(req.session.user._id)
         .then(user => {
             req.user = user;
             next();
         })
         .catch(err => console.log(err));
 });
+
 
 app.use('/admin', adminRoutes);
 app.use(shopRoutes);
